@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+*.csv
+*.xlsx
+*.xls
+*.json
+*.txt
+!requirements.txt
+!README.md
+!LICENSE
+
+# Build and packaging
+Output/
+*.exe
+*.msi
+*.iss
+setup.iss
+installer.nsi
+*.log
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.bak
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/ 
