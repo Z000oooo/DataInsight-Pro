@@ -1,9 +1,16 @@
 # DataInsight Pro - 智能数据分析工具
 
+
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 [![Download](https://img.shields.io/badge/Download-Latest%20Release-brightgreen.svg)](https://github.com/Z000oooo/DataInsight-Pro/releases/latest)
+
+> 🚀 **专业的数据分析与可视化工具，让数据洞察变得简单高效！**
+
+![软件预览](screenshots/software_preview.png)
+*DataInsight Pro 主界面预览 - 现代化设计，功能全面*
+
 
 ## 📥 快速下载
 
@@ -17,6 +24,17 @@
 ## 📋 项目简介
 
 DataInsight Pro 是一款专业的数据分析与可视化工具，提供直观的图形界面，让数据分析变得简单高效。
+
+### 🎯 核心优势
+- **📊 强大的数据处理能力**：支持大规模数据集的导入、清洗和分析
+- **🎨 丰富的可视化选项**：15+ 种图表类型，满足各种分析需求
+- **🔧 智能数据清洗**：一键处理缺失值、异常值和重复数据
+- **📈 深度统计分析**：相关性分析、聚类分析、分组统计等
+- **🎛️ 用户友好界面**：现代化设计，操作简单直观
+- **⚡ 高性能处理**：基于 Pandas 和 NumPy，处理速度快
+
+![功能特色](screenshots/features_overview.png)
+*核心功能概览：数据处理、统计分析、可视化、高级功能*
 
 ## ✨ 主要特性
 
@@ -115,10 +133,29 @@ python main.py
 
 ## 🖼️ 界面预览
 
-程序采用现代化设计，包含以下主要区域：
-- **左侧控制面板**：数据操作和分析功能
-- **右侧选项卡**：数据展示、可视化、统计信息等
-- **状态栏**：显示操作状态和程序信息
+### 主界面
+程序采用现代化设计，界面简洁美观，功能布局合理。
+
+![主界面截图](screenshots/main_interface.png)
+*主界面展示：左侧控制面板 + 右侧多选项卡布局*
+
+#### 界面组成
+- **🎛️ 左侧控制面板**：数据操作和分析功能
+- **📊 右侧选项卡**：数据展示、可视化、统计信息等
+- **📍 状态栏**：显示操作状态和程序信息
+
+### 数据导入与预览
+支持多种数据格式，自动识别数据类型，提供详细的数据概览。
+
+![数据导入](screenshots/data_import.png)
+*数据导入界面：CSV/Excel文件智能解析与预览*
+
+### 软件信息
+详细的软件信息和系统环境展示。
+
+![软件信息](screenshots/software_info.png)
+*软件信息页面：版本信息、技术架构、系统环境*
+
 
 ## 🛠️ 技术架构
 
@@ -157,6 +194,13 @@ python main.py
 ### 📋 下载文件说明
 - **DataInsight_Pro_Setup_v1.0.exe** - Windows安装包 (推荐)
 - **Source code** - 源代码 (开发者使用)
+
+### 📸 截图说明
+项目包含丰富的界面截图，展示软件的各项功能：
+- **screenshots/** 文件夹包含所有界面截图
+- 涵盖主界面、数据处理、可视化、分析等各个功能模块
+- 图片格式：PNG，高清展示，文件大小适中
+- 如需更新截图，请参考现有文件命名规范
 
 ## 🤝 贡献指南
 
