@@ -8,9 +8,6 @@
 
 > 🚀 **专业的数据分析与可视化工具，让数据洞察变得简单高效！**
 
-![软件预览](screenshots/software_preview.png)
-*DataInsight Pro 主界面预览 - 现代化设计，功能全面*
-
 
 ## 📥 快速下载
 
