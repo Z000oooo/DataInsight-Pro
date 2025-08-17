@@ -14,36 +14,18 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox  # GUI相关库
 import pandas as pd  # 数据处理库
 import numpy as np   # 数值计算库
-import matplotlib.pyplot as plt  # 静态图表库
-import matplotlib
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg  # matplotlib在tkinter中的集成
-import seaborn as sns  # 统计可视化库
-import plotly.express as px  # 快速交互式图表
-import plotly.graph_objects as go  # 自定义交互式图表
-from plotly.subplots import make_subplots  # 子图创建
+# 可视化相关库将按需惰性导入以减少启动时间
 import io
 import os
 from datetime import datetime
 import webbrowser
 import tempfile
-from sklearn.preprocessing import StandardScaler, LabelEncoder  # 数据预处理
-from sklearn.cluster import KMeans  # K均值聚类
-from sklearn.decomposition import PCA  # 主成分分析
+# 机器学习相关库将按需惰性导入以减少启动时间
 import warnings
 warnings.filterwarnings('ignore')  # 忽略警告信息
 
 # 设置matplotlib中文字体和样式
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']  # 中文字体
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-plt.rcParams['font.size'] = 12  # 增大字体
-plt.rcParams['figure.facecolor'] = '#f8f9fa'  # 图表背景色
-plt.rcParams['axes.facecolor'] = '#ffffff'  # 坐标轴背景色
-plt.rcParams['axes.edgecolor'] = '#2c3e50'  # 坐标轴边框色
-plt.rcParams['axes.linewidth'] = 1.2  # 坐标轴线宽
-plt.rcParams['grid.color'] = '#bdc3c7'  # 网格颜色
-plt.rcParams['grid.alpha'] = 0.3  # 网格透明度
-plt.rcParams['xtick.labelsize'] = 11  # x轴标签字体大小
-plt.rcParams['ytick.labelsize'] = 11  # y轴标签字体大小
+# 图表样式配置将在首次初始化可视化后设置
 
 class DataInsightPro:
     """DataInsight Pro - 智能数据分析工具主类"""
@@ -60,6 +42,16 @@ class DataInsightPro:
         self.data = None  # 当前处理的数据
         self.original_data = None  # 原始数据备份
         self.cleaned_data = None  # 清洗后的数据
+        
+        # 惰性导入与可视化句柄
+        self.plt = None
+        self.matplotlib = None
+        self.FigureCanvasTkAgg = None
+        self.sns = None
+        self.px = None
+        self.ax = None
+        self.fig = None
+        self.canvas = None
         
         # 配置样式
         self.setup_styles()
@@ -379,12 +371,7 @@ class DataInsightPro:
         """创建可视化选项卡"""
         viz_tab = ttk.Frame(self.notebook)
         self.notebook.add(viz_tab, text="📊 可视化图表")
-        
-        # 创建matplotlib画布用于显示图表 - 增大图表尺寸
-        self.fig, self.ax = plt.subplots(figsize=(12, 8))
-        self.fig.patch.set_facecolor('#f8f9fa')  # 设置图表背景色
-        self.canvas = FigureCanvasTkAgg(self.fig, viz_tab)
-        self.canvas.get_tk_widget().pack(fill='both', expand=True, padx=10, pady=10)
+        self.viz_tab = viz_tab
         
     def create_statistics_tab(self):
         """创建统计信息选项卡"""
@@ -428,6 +415,47 @@ class DataInsightPro:
         self.groupby_text.pack(side='left', fill='both', expand=True)
         groupby_scrollbar.config(command=self.groupby_text.yview)
     
+    def _ensure_matplotlib(self):
+        if self.plt is None:
+            import matplotlib.pyplot as plt_local
+            import matplotlib as matplotlib_local
+            from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg as CanvasLocal
+            self.plt = plt_local
+            self.matplotlib = matplotlib_local
+            self.FigureCanvasTkAgg = CanvasLocal
+            self.plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+            self.plt.rcParams['axes.unicode_minus'] = False
+            self.plt.rcParams['font.size'] = 12
+            self.plt.rcParams['figure.facecolor'] = '#f8f9fa'
+            self.plt.rcParams['axes.facecolor'] = '#ffffff'
+            self.plt.rcParams['axes.edgecolor'] = '#2c3e50'
+            self.plt.rcParams['axes.linewidth'] = 1.2
+            self.plt.rcParams['grid.color'] = '#bdc3c7'
+            self.plt.rcParams['grid.alpha'] = 0.3
+            self.plt.rcParams['xtick.labelsize'] = 11
+            self.plt.rcParams['ytick.labelsize'] = 11
+        if self.canvas is None:
+            self.fig, self.ax = self.plt.subplots(figsize=(12, 8))
+            self.fig.patch.set_facecolor('#f8f9fa')
+            self.canvas = self.FigureCanvasTkAgg(self.fig, self.viz_tab)
+            self.canvas.get_tk_widget().pack(fill='both', expand=True, padx=10, pady=10)
+
+    def _ensure_seaborn(self):
+        if self.sns is None:
+            import seaborn as sns_local
+            self.sns = sns_local
+
+    def _ensure_plotly(self):
+        if self.px is None:
+            import plotly.express as px_local
+            self.px = px_local
+
+    def _ensure_sklearn(self):
+        from sklearn.preprocessing import StandardScaler as _StandardScaler
+        from sklearn.cluster import KMeans as _KMeans
+        from sklearn.decomposition import PCA as _PCA
+        return _StandardScaler, _KMeans, _PCA
+
     def create_info_tab(self):
         """创建软件信息选项卡"""
         info_tab = ttk.Frame(self.notebook)
@@ -514,8 +542,8 @@ class DataInsightPro:
         tech_text = f"""🔧 开发框架
 • GUI: Tkinter + ttk
 • 数据处理: Pandas {pd.__version__}
-• 可视化: Matplotlib + Seaborn
-• 机器学习: Scikit-learn
+• 可视化: Matplotlib + Seaborn (按需加载)
+• 机器学习: Scikit-learn (按需加载)
 
 💡 设计特色
 • 现代化扁平UI设计
@@ -624,9 +652,12 @@ class DataInsightPro:
         try:
             # 根据文件扩展名选择读取方法
             if file_path.endswith('.csv'):
-                self.data = pd.read_csv(file_path, encoding='utf-8')  # 优先使用UTF-8编码
+                # 优先使用UTF-8编码，并限制低内存推断提升加载速度
+                self.data = pd.read_csv(file_path, encoding='utf-8', low_memory=False)
             elif file_path.endswith(('.xlsx', '.xls')):
-                self.data = pd.read_excel(file_path)
+                # 指定engine以避免不必要的自动检测
+                engine = 'openpyxl' if file_path.endswith('.xlsx') else None
+                self.data = pd.read_excel(file_path, engine=engine)
             else:
                 messagebox.showerror("错误", "不支持的文件格式！")
                 return
@@ -641,7 +672,7 @@ class DataInsightPro:
         except UnicodeDecodeError:
             # 如果UTF-8失败，尝试GBK编码
             try:
-                self.data = pd.read_csv(file_path, encoding='gbk')
+                self.data = pd.read_csv(file_path, encoding='gbk', low_memory=False)
                 self.original_data = self.data.copy()
                 self.update_data_view()
                 self.update_info_label()
@@ -671,8 +702,8 @@ class DataInsightPro:
             self.data_tree.column(col, width=100, minwidth=50)
             
         # 插入数据（为性能考虑，限制显示前1000行）
-        for index, row in self.data.head(1000).iterrows():
-            self.data_tree.insert('', 'end', values=list(row))
+        for index, row in self.data.head(1000).itertuples(index=False, name=None):
+            self.data_tree.insert('', 'end', values=row)
             
     def update_info_label(self):
         """更新信息标签"""
@@ -934,6 +965,8 @@ class DataInsightPro:
             messagebox.showwarning("警告", "没有找到数值列！")
             return
             
+        # 按需导入标准化器
+        StandardScaler, _, _ = self._ensure_sklearn()
         scaler = StandardScaler()
         self.data[numeric_cols] = scaler.fit_transform(self.data[numeric_cols])
         
@@ -1054,13 +1087,17 @@ class DataInsightPro:
         # 计算相关性矩阵
         corr_matrix = self.data[numeric_cols].corr()
         
+        # 确保可视化环境
+        self._ensure_matplotlib()
+        self._ensure_seaborn()
+        
         # 清除之前的图表
         self.fig.clear()
         self.fig.patch.set_facecolor('#f8f9fa')
         self.ax = self.fig.add_subplot(111)
         
         # 创建热图
-        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, 
+        self.sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, 
                    square=True, ax=self.ax, cbar_kws={'shrink': 0.8}, 
                    fmt='.2f', annot_kws={'size': 10})
         self.ax.set_title('相关性矩阵', fontsize=14, fontweight='bold', pad=20)
@@ -1091,6 +1128,9 @@ class DataInsightPro:
             messagebox.showwarning("警告", "聚类分析至少需要10行数据！")
             return
             
+        # 标准化与聚类所需库
+        StandardScaler, KMeans, PCA = self._ensure_sklearn()
+        
         # 标准化数据
         scaler = StandardScaler()
         scaled_data = scaler.fit_transform(cluster_data)
@@ -1102,6 +1142,9 @@ class DataInsightPro:
         # PCA降维用于可视化
         pca = PCA(n_components=2)
         pca_data = pca.fit_transform(scaled_data)
+        
+        # 确保可视化环境
+        self._ensure_matplotlib()
         
         # 清除之前的图表
         self.fig.clear()
@@ -1118,7 +1161,7 @@ class DataInsightPro:
         self.ax.tick_params(labelsize=10)
         
         # 添加颜色条
-        plt.colorbar(scatter, ax=self.ax)
+        self.plt.colorbar(scatter, ax=self.ax)
         
         self.fig.tight_layout()
         self.canvas.draw()
@@ -1135,6 +1178,9 @@ class DataInsightPro:
             messagebox.showwarning("警告", "没有找到数值列！")
             return
             
+        # 确保可视化环境
+        self._ensure_matplotlib()
+        
         # 清除之前的图表
         self.fig.clear()
         self.fig.patch.set_facecolor('#f8f9fa')
@@ -1173,9 +1219,9 @@ class DataInsightPro:
             messagebox.showwarning("警告", "交互式图表至少需要2个数值列！")
             return
             
-        # 创建交互式散点图矩阵
-        fig = px.scatter_matrix(self.data[numeric_cols], 
-                               title="交互式散点图矩阵")
+        # 创建交互式散点图矩阵（按需导入plotly）
+        self._ensure_plotly()
+        fig = self.px.scatter_matrix(self.data[numeric_cols], title="交互式散点图矩阵")
         
         # 保存到临时HTML文件并打开
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
@@ -1266,6 +1312,8 @@ class DataInsightPro:
                 return
                 
             try:
+                # 确保可视化环境
+                self._ensure_matplotlib()
                 # 清除之前的图表并重新设置
                 self.fig.clear()
                 self.fig.patch.set_facecolor('#f8f9fa')
@@ -1990,6 +2038,8 @@ class DataInsightPro:
                 return
                 
             try:
+                # 确保可视化环境
+                self._ensure_matplotlib()
                 # 清除之前的图表
                 self.ax.clear()
                 
@@ -2022,7 +2072,7 @@ class DataInsightPro:
                     
                 elif plot_type == "分组散点图":
                     groups = self.data.groupby(group_col)
-                    colors = plt.cm.Set1(np.linspace(0, 1, len(groups)))
+                    colors = self.plt.cm.Set1(np.linspace(0, 1, len(groups)))
                     
                     for (name, group), color in zip(groups, colors):
                         self.ax.scatter(group.index, group[value_col], label=name, alpha=0.7, color=color)
@@ -2103,6 +2153,8 @@ class DataInsightPro:
                 return
                 
             try:
+                # 确保可视化环境
+                self._ensure_matplotlib()
                 # 清除之前的图表
                 self.ax.clear()
                 
